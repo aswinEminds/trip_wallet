@@ -124,7 +124,7 @@ export default function ExpensesPage() {
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="brutal-input flex-shrink-0 w-auto py-2 pr-8"
+          className="brutal-input flex-shrink max-w-[40%] sm:max-w-[50%] py-2 pr-8 truncate"
         >
           <option value="">All</option>
           {categories.map((c) => (
@@ -196,7 +196,7 @@ export default function ExpensesPage() {
           <div>
             <label className="block text-xs font-black uppercase text-black mb-1">Category</label>
             <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-              className="brutal-input">
+              className="brutal-input truncate">
               <option value="">Select category</option>
               {categories.map((c) => (
                 <option key={c._id} value={c._id}>{c.name}</option>
@@ -221,7 +221,7 @@ export default function ExpensesPage() {
           <div>
             <label className="block text-xs font-black uppercase text-black mb-1">Paid By</label>
             <select value={form.paidBy} onChange={(e) => setForm({ ...form, paidBy: e.target.value })}
-              className="brutal-input">
+              className="brutal-input truncate">
               <option value="">Select person</option>
               {people.map((p) => (
                 <option key={p._id} value={p._id}>{p.name}</option>

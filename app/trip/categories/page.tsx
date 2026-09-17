@@ -290,7 +290,7 @@ export default function CategoriesPage() {
           <div>
             <label className="block text-xs font-black uppercase text-black mb-1">From</label>
             <select value={transferForm.fromCategoryId} onChange={(e) => setTransferForm({ ...transferForm, fromCategoryId: e.target.value })}
-              className="brutal-input">
+              className="brutal-input truncate">
               <option value="">Select source</option>
               {categories.map((c) => (
                 <option key={c._id} value={c._id}>{c.name} (₹{c.remaining.toLocaleString("en-IN")} left)</option>
@@ -300,7 +300,7 @@ export default function CategoriesPage() {
           <div>
             <label className="block text-xs font-black uppercase text-black mb-1">To</label>
             <select value={transferForm.toCategoryId} onChange={(e) => setTransferForm({ ...transferForm, toCategoryId: e.target.value })}
-              className="brutal-input">
+              className="brutal-input truncate">
               <option value="">Select destination</option>
               {categories.filter((c) => c._id !== transferForm.fromCategoryId).map((c) => (
                 <option key={c._id} value={c._id}>{c.name}</option>
