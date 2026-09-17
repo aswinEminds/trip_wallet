@@ -34,7 +34,7 @@ export async function GET() {
     // Merge and sort by createdAt
     type ActivityItem = {
       type: "payment" | "expense" | "transfer";
-      data: Record<string, unknown>;
+      data: any;
       createdAt: Date;
     };
 

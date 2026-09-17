@@ -9,7 +9,7 @@ export async function getSession() {
 export async function requireAdmin() {
   const session = await getSession();
   if (!session || !session.user?.isAdmin) {
-    return { authorized: false, response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+    return { authorized: false as const, response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   }
-  return { authorized: true, session, response: null };
+  return { authorized: true as const, session, response: null as null };
 }
