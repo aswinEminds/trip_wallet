@@ -6,11 +6,15 @@ import { Payment } from "@/lib/models/payment";
 import { Category } from "@/lib/models/category";
 import { Expense } from "@/lib/models/expense";
 import { BudgetTransfer } from "@/lib/models/budgetTransfer";
+import { requireTrip } from "@/lib/auth";
 
 export async function GET() {
+  const auth = await requireTrip();
+  if (!auth.authorized) return auth.response;
+
   try {
     await connectDB();
-    const trip = await Trip.findOne({ status: "active" }).select("-adminPasswordHash");
+    const trip = await Trip.findById(auth.tripId).select("-adminPasswordHash");
     if (!trip) {
       return NextResponse.json({ error: "No active trip" }, { status: 404 });
     }

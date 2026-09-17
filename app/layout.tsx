@@ -11,9 +11,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Trip Wallet — Rain Raiders",
-  description:
-    "Plan it. Spend it. Track it. Settle it. A trip money tracker by Rain Raiders 🌧️⚡",
+  title: "Trip Wallet",
+  description: "Manage your trip expenses with your friends.",
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {

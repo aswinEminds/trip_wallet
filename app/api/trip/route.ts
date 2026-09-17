@@ -7,13 +7,25 @@ import { Payment } from "@/lib/models/payment";
 import { Category } from "@/lib/models/category";
 import { Expense } from "@/lib/models/expense";
 import { BudgetTransfer } from "@/lib/models/budgetTransfer";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin, requireTrip } from "@/lib/auth";
 
-// GET — Get the active trip
+const generateJoinCode = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
+// GET — Get the active trip for the session
 export async function GET() {
+  const auth = await requireTrip();
+  if (!auth.authorized) return auth.response;
+
   try {
     await connectDB();
-    const trip = await Trip.findOne({ status: "active" }).select("-adminPasswordHash");
+    const trip = await Trip.findById(auth.tripId).select("-adminPasswordHash");
     if (!trip) {
       return NextResponse.json({ trip: null }, { status: 200 });
     }
@@ -29,12 +41,6 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    // Check if active trip exists
-    const existing = await Trip.findOne({ status: "active" });
-    if (existing) {
-      return NextResponse.json({ error: "An active trip already exists" }, { status: 400 });
-    }
-
     const body = await req.json();
     const { name, startDate, endDate, currency, adminUsername, adminPassword } = body;
 
@@ -47,12 +53,25 @@ export async function POST(req: NextRequest) {
     }
 
     const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
+    
+    // Generate a unique join code
+    let joinCode = generateJoinCode();
+    let isUnique = false;
+    while (!isUnique) {
+      const existing = await Trip.findOne({ joinCode });
+      if (!existing) {
+        isUnique = true;
+      } else {
+        joinCode = generateJoinCode();
+      }
+    }
 
     const trip = await Trip.create({
       name: name.trim(),
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       currency: currency || "INR",
+      joinCode,
       adminUsername: adminUsername.toLowerCase().trim(),
       adminPasswordHash,
     });
@@ -78,8 +97,8 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const { name, startDate, endDate, currency } = body;
 
-    const trip = await Trip.findOneAndUpdate(
-      { status: "active" },
+    const trip = await Trip.findByIdAndUpdate(
+      auth.tripId,
       { 
         ...(name && { name: name.trim() }),
         ...(startDate && { startDate: new Date(startDate) }),
@@ -111,7 +130,7 @@ export async function DELETE(req: NextRequest) {
     const body = await req.json();
     const { confirmText } = body;
 
-    const trip = await Trip.findOne({ status: "active" });
+    const trip = await Trip.findById(auth.tripId);
     if (!trip) {
       return NextResponse.json({ error: "No active trip found" }, { status: 404 });
     }

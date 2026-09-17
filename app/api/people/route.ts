@@ -3,13 +3,16 @@ import { connectDB } from "@/lib/db";
 import { Person } from "@/lib/models/person";
 import { Payment } from "@/lib/models/payment";
 import { Trip } from "@/lib/models/trip";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin, requireTrip } from "@/lib/auth";
 
 // GET — List all people with calculated payment status
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireTrip();
+  if (!auth.authorized) return auth.response;
+
   try {
     await connectDB();
-    const trip = await Trip.findOne({ status: "active" });
+    const trip = await Trip.findById(auth.tripId);
     if (!trip) {
       return NextResponse.json({ error: "No active trip" }, { status: 404 });
     }
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await connectDB();
-    const trip = await Trip.findOne({ status: "active" });
+    const trip = await Trip.findById(auth.tripId);
     if (!trip) {
       return NextResponse.json({ error: "No active trip" }, { status: 404 });
     }

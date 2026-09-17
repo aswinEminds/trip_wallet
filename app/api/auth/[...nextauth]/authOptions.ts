@@ -28,40 +28,50 @@ declare module "next-auth/jwt" {
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Admin Login",
+      name: "Trip Login",
       credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" },
+        joinCode: { label: "Trip Code", type: "text" },
+        username: { label: "Username (Admin Only)", type: "text" },
+        password: { label: "Password (Admin Only)", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.username || !credentials?.password) {
-          return null;
+        if (!credentials?.joinCode) {
+          throw new Error("Join code is required");
         }
 
         await connectDB();
 
-        const trip = await Trip.findOne({
-          status: "active",
-          adminUsername: credentials.username.toLowerCase().trim(),
-        });
+        const code = credentials.joinCode.toUpperCase().trim();
+        const trip = await Trip.findOne({ joinCode: code });
 
         if (!trip) {
-          return null;
+          throw new Error("Invalid join code");
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          trip.adminPasswordHash
-        );
+        // Admin flow
+        if (credentials.username && credentials.password) {
+          if (trip.adminUsername !== credentials.username.toLowerCase().trim()) {
+            throw new Error("Invalid admin credentials");
+          }
 
-        if (!isValid) {
-          return null;
+          const isValid = await bcrypt.compare(credentials.password, trip.adminPasswordHash);
+          if (!isValid) {
+            throw new Error("Invalid admin credentials");
+          }
+
+          return {
+            id: `admin_${trip._id.toString()}`,
+            name: credentials.username,
+            isAdmin: true,
+            tripId: trip._id.toString(),
+          };
         }
 
+        // Guest flow
         return {
-          id: trip._id.toString(),
-          name: credentials.username,
-          isAdmin: true,
+          id: `guest_${trip._id.toString()}`,
+          name: "Guest",
+          isAdmin: false,
           tripId: trip._id.toString(),
         };
       },

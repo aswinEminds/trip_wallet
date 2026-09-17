@@ -1,0 +1,9 @@
+{
+  "name": "Trip Wallet",
+  "short_name": "Trip Wallet",
+  "description": "Manage your trip expenses with your friends.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}

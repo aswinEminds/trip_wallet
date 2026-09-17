@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import MoneyDisplay from "@/components/MoneyDisplay";
 import ProgressBar from "@/components/ProgressBar";
 import { StarBurst, WavyLine } from "@/components/Vectors";
@@ -33,10 +36,17 @@ interface ActivityItem {
 }
 
 export default function DashboardPage() {
-  const { data, isLoading } = useSWR<DashboardData>("/api/dashboard", fetcher, { refreshInterval: 30000 });
-  const { data: activityData } = useSWR<{ activities: ActivityItem[] }>("/api/activity", fetcher, { refreshInterval: 30000 });
+  const { data, isLoading } = useSWR<any>("/api/dashboard", fetcher, { refreshInterval: 30000 });
+  const { data: activityData } = useSWR<any>("/api/activity", fetcher, { refreshInterval: 30000 });
+  const router = useRouter();
 
-  if (isLoading || !data) {
+  useEffect(() => {
+    if (data?.error === "No active trip") {
+      signOut({ callbackUrl: "/" });
+    }
+  }, [data]);
+
+  if (isLoading || !data || data.error) {
     return (
       <div className="px-4 pt-6 space-y-4">
         {[...Array(4)].map((_, i) => <div key={i} className="skeleton h-36 w-full" />)}

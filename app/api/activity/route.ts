@@ -4,13 +4,17 @@ import { Trip } from "@/lib/models/trip";
 import { Payment } from "@/lib/models/payment";
 import { Expense } from "@/lib/models/expense";
 import { BudgetTransfer } from "@/lib/models/budgetTransfer";
+import { requireTrip } from "@/lib/auth";
 
 export async function GET() {
   try {
     await connectDB();
-    const trip = await Trip.findOne({ status: "active" });
+    const auth = await requireTrip();
+    if (!auth.authorized) return auth.response;
+
+    const trip = await Trip.findById(auth.tripId);
     if (!trip) {
-      return NextResponse.json({ error: "No active trip" }, { status: 404 });
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
     }
 
     // Fetch recent items from each type

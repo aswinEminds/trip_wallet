@@ -4,13 +4,16 @@ import { BudgetTransfer } from "@/lib/models/budgetTransfer";
 import { Category } from "@/lib/models/category";
 import { Expense } from "@/lib/models/expense";
 import { Trip } from "@/lib/models/trip";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin, requireTrip } from "@/lib/auth";
 
 // GET — List all budget transfers
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireTrip();
+  if (!auth.authorized) return auth.response;
+
   try {
     await connectDB();
-    const trip = await Trip.findOne({ status: "active" });
+    const trip = await Trip.findById(auth.tripId);
     if (!trip) {
       return NextResponse.json({ error: "No active trip" }, { status: 404 });
     }
@@ -34,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await connectDB();
-    const trip = await Trip.findOne({ status: "active" });
+    const trip = await Trip.findById(auth.tripId);
     if (!trip) {
       return NextResponse.json({ error: "No active trip" }, { status: 404 });
     }

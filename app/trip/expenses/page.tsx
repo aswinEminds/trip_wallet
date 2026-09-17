@@ -153,30 +153,30 @@ export default function ExpensesPage() {
                   // @ts-ignore
                   const IconComp = exp.categoryId?.icon && Icons[exp.categoryId.icon] ? Icons[exp.categoryId.icon] : Folder;
                   return (
-                    <div key={exp._id} className="bg-white border-4 border-black p-3 shadow-[4px_4px_0px_black] hover:-translate-y-1 hover:shadow-[6px_6px_0px_black] transition-transform">
+                    <div key={exp._id} className="bg-white border-4 border-black p-2 sm:p-3 shadow-[4px_4px_0px_black] hover:-translate-y-1 hover:shadow-[6px_6px_0px_black] transition-transform">
                       <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                          <span className="bg-gray-100 border-2 border-black p-2 shadow-[2px_2px_0px_black] text-black">
-                            <IconComp size={24} strokeWidth={2.5} />
+                        <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                          <span className="bg-gray-100 border-2 border-black p-1.5 sm:p-2 shadow-[2px_2px_0px_black] text-black flex-shrink-0">
+                            <IconComp size={20} className="sm:w-6 sm:h-6" strokeWidth={2.5} />
                           </span>
                           <div className="flex-1 min-w-0">
-                            <p className="font-black text-lg text-black truncate uppercase leading-tight">{exp.description}</p>
-                            {exp.note && <p className="text-xs font-bold text-gray-600 truncate">{exp.note}</p>}
+                            <p className="font-black text-sm sm:text-lg text-black truncate uppercase leading-tight">{exp.description}</p>
+                            {exp.note && <p className="text-[9px] sm:text-xs font-bold text-gray-600 truncate">{exp.note}</p>}
                             <div className="flex flex-wrap gap-1 mt-1">
-                              <span className="text-[9px] font-black uppercase bg-neon-yellow border border-black px-1">{exp.categoryId?.name || "Uncategorized"}</span>
-                              <span className="text-[9px] font-black uppercase bg-gray-200 border border-black px-1">By {exp.paidBy?.name || "?"}</span>
-                              <span className="text-[9px] font-black uppercase bg-black text-white px-1">{format(new Date(exp.expenseDate), "hh:mm a")}</span>
+                              <span className="text-[8px] sm:text-[9px] font-black uppercase bg-neon-yellow border border-black px-1">{exp.categoryId?.name || "Uncategorized"}</span>
+                              <span className="text-[8px] sm:text-[9px] font-black uppercase bg-gray-200 border border-black px-1">By {exp.paidBy?.name || "?"}</span>
+                              <span className="text-[8px] sm:text-[9px] font-black uppercase bg-black text-white px-1">{format(new Date(exp.expenseDate), "hh:mm a")}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="text-right flex-shrink-0 ml-2">
-                          <p className="font-black text-neon-pink text-xl bg-white border-2 border-black px-1 transform ">₹{exp.amount.toLocaleString("en-IN")}</p>
+                        <div className="text-right flex-shrink-0 ml-1 sm:ml-2 flex flex-col items-end">
+                          <p className="font-black text-neon-pink text-sm sm:text-xl bg-white border-2 border-black px-1 transform ">₹{exp.amount.toLocaleString("en-IN")}</p>
                           {isAdmin && (
                             <button
                               onClick={() => handleDelete(exp._id, exp.description)}
-                              className="text-[10px] font-black uppercase bg-black text-white px-2 py-1 mt-2 hover:bg-neon-red transition-colors flex items-center gap-1 justify-end ml-auto"
+                              className="text-[9px] sm:text-[10px] font-black uppercase bg-black text-white px-1.5 sm:px-2 py-1 mt-2 hover:bg-neon-red transition-colors flex items-center gap-1"
                             >
-                              <Trash2 size={12} strokeWidth={3} /> Delete
+                              <Trash2 size={10} className="sm:w-3 sm:h-3" strokeWidth={3} /> <span className="hidden sm:inline">Delete</span>
                             </button>
                           )}
                         </div>

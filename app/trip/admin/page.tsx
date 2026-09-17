@@ -37,6 +37,7 @@ export default function AdminPage() {
     try {
       const result = await signIn("credentials", {
         redirect: false,
+        joinCode: trip?.joinCode,
         username: loginForm.username,
         password: loginForm.password,
       });
@@ -74,6 +75,7 @@ export default function AdminPage() {
       await apiDelete("/api/trip", { confirmText });
       showToast("Trip cleared. Starting fresh!", "success");
       setShowClearTrip(false);
+      await signOut({ redirect: false });
       router.push("/");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Failed", "error");
@@ -128,8 +130,8 @@ export default function AdminPage() {
             </div>
             <button
               type="submit"
-              disabled={loginLoading}
-              className="brutal-btn brutal-btn-pink w-full py-4 mt-2 text-lg"
+              disabled={loginLoading || !trip?.joinCode}
+              className="brutal-btn brutal-btn-pink w-full py-4 mt-2 text-lg disabled:opacity-50"
             >
               {loginLoading ? "WAIT..." : "LOGIN"}
             </button>
@@ -158,6 +160,22 @@ export default function AdminPage() {
         <p className="font-black text-neon-cyan text-lg flex items-center gap-2">
           {session.user?.name} <Lock size={20} strokeWidth={3} />
         </p>
+      </div>
+
+      <div className="bg-white border-4 border-black p-4 mb-6 shadow-[6px_6px_0px_black]">
+        <p className="text-[10px] text-black uppercase font-black mb-1">Trip Join Code</p>
+        <div className="flex justify-between items-center bg-gray-100 p-3 border-2 border-black">
+          <span className="font-mono text-2xl tracking-widest font-black">{trip?.joinCode || "------"}</span>
+          <button 
+            onClick={() => {
+              navigator.clipboard.writeText(trip?.joinCode || "");
+              showToast("Code copied!", "success");
+            }}
+            className="brutal-btn bg-neon-lime px-3 py-2 text-xs"
+          >
+            COPY
+          </button>
+        </div>
       </div>
 
       {/* Admin Actions */}

@@ -6,6 +6,7 @@ export interface ITrip extends Document {
   endDate: Date;
   currency: string;
   status: "active" | "completed";
+  joinCode: string;
   adminUsername: string;
   adminPasswordHash: string;
   createdAt: Date;
@@ -19,6 +20,7 @@ const TripSchema = new Schema<ITrip>(
     endDate: { type: Date, required: true },
     currency: { type: String, required: true, default: "INR" },
     status: { type: String, enum: ["active", "completed"], default: "active" },
+    joinCode: { type: String, required: true, unique: true, uppercase: true, trim: true },
     adminUsername: { type: String, required: true, trim: true, lowercase: true },
     adminPasswordHash: { type: String, required: true },
   },
