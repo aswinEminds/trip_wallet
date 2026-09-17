@@ -36,8 +36,8 @@ interface ActivityItem {
 }
 
 export default function DashboardPage() {
-  const { data, isLoading } = useSWR<any>("/api/dashboard", fetcher, { refreshInterval: 30000 });
-  const { data: activityData } = useSWR<any>("/api/activity", fetcher, { refreshInterval: 30000 });
+  const { data, isLoading } = useSWR<DashboardData & { error?: string }>("/api/dashboard", fetcher, { refreshInterval: 30000 });
+  const { data: activityData } = useSWR<{ activities: ActivityItem[], error?: string }>("/api/activity", fetcher, { refreshInterval: 30000 });
   const router = useRouter();
 
   useEffect(() => {
